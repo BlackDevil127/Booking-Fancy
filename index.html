@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fancy Looks Salon | Booking & Admin</title>
+    <style>
+        :root { --gold: #D4AF37; --dark: #121212; --gray: #f4f4f4; }
+        body { font-family: 'Segoe UI', sans-serif; background: #eee; margin: 0; padding: 20px; }
+        .main-container { max-width: 900px; margin: auto; }
+        
+        /* Tab Styling */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        .tab-btn { padding: 10px 20px; cursor: pointer; border: none; background: #ccc; border-radius: 5px; font-weight: bold; }
+        .tab-btn.active { background: var(--gold); color: white; }
+
+        .section { display: none; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .section.active { display: block; }
+
+        /* Form Styling */
+        h2 { color: var(--dark); border-bottom: 2px solid var(--gold); padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .btn-submit { width: 100%; background: var(--dark); color: var(--gold); padding: 15px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+
+        /* Admin Table Styling */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: var(--dark); color: var(--gold); }
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        
+        @media (max-width: 600px) { table, thead, tbody, th, td, tr { display: block; } th { display: none; } 
+            tr { margin-bottom: 15px; border: 1px solid var(--gold); padding: 10px; }
+            td::before { content: attr(data-label); font-weight: bold; display: block; color: var(--gold); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showSection('booking-section', this)">Customer Booking</button>
+        
+        <button class="tab-btn" onclick="checkAdmin(this)">Admin Dashboard 🔒</button>
+    </div>
+
+    <div id="booking-section" class="section active">
+        <h2>Book Your Appointment</h2>
+        <form id="bookingForm">
+            <div class="form-group">
+                <label>Customer Name</label>
+                <input type="text" id="custName" placeholder="Enter your name" required>
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="custPhone" placeholder="01XXX-XXXXXX" required>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Date</label>
+                    <input type="date" id="bookDate" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Time</label>
+                    <select id="bookTime" required>
+                        <option value="">Select Time</option>
+                        <option>11:00 AM</option>
+                        <option>12:00 PM</option>
+                        <option>01:00 PM</option>
+                        <option>02:00 PM</option>
+                        <option>03:00 PM</option>
+                        <option>04:00 PM</option>
+                        <option>05:00 PM</option>
+                        <option>06:00 PM</option>
+                        <option>07:00 PM</option>
+                        <option>08:00 PM</option>
+                        <option>09:00 PM</option>
+                        <option>10:00 PM</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Service</label>
+                <select id="bookService" required>
+                    <option value="">Select Service</option>
+                    <option>Haircut & Styling</option>
+                    <option>New Hair Wig</option>
+                    <option>Wig Servicing</option>
+                    <option>Facial & Skin Care</option>
+                    <option>Beard Grooming</option>
+                    <option>Bridal/Party Makeup</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-submit">CONFIRM BOOKING</button>
+        </form>
+    </div>
+
+    <div id="admin-section" class="section">
+        <h2>All Bookings (Fancy Looks Salon)</h2>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Service</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingTableBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- NEW: Password Logic ---
+    let isAdmin = false; // Prothome false thakbe
+
+    function checkAdmin(btn) {
+        if (isAdmin === true) {
+            // Jodi login kora thake, tahole dashboard dekhabe
+            showSection('admin-section', btn);
+        } else {
+            // Jodi login na thake, Password chaibe
+            let pass = prompt("Enter Admin Password:");
+            
+            if (pass === "Sumit") {  // <-- EKHANE PASSWORD CHANGE KORUN
+                isAdmin = true;
+                alert("Login Successful!");
+                showSection('admin-section', btn);
+            } else {
+                alert("Wrong Password! Access Denied.");
+            }
+        }
+    }
+    // ---------------------------
+
+    // Tab switching logic (OLD CODE - NO CHANGE)
+    function showSection(id, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+        if(id === 'admin-section') loadBookings();
+    }
+
+    // Booking Submission (OLD CODE - NO CHANGE)
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const newBooking = {
+            id: Date.now(),
+            name: document.getElementById('custName').value,
+            phone: document.getElementById('custPhone').value,
+            date: document.getElementById('bookDate').value,
+            time: document.getElementById('bookTime').value,
+            service: document.getElementById('bookService').value
+        };
+
+        // Save to LocalStorage
+        let bookings = JSON.parse(localStorage.getItem('salonBookings')) || [];
+        bookings.push(newBooking);
+        localStorage.setItem('salonBookings', JSON.stringify(bookings));
+
+        alert("Booking Successful! Admin will check your request.");
+        this.reset();
+    });
+
+    // Load Bookings for Admin (OLD CODE - NO CHANGE)
+    function loadBookings() {
+        const tableBody = document.getElementById('bookingTableBody');
+        const bookings = JSON.parse(localStorage.getItem('salonBookings')) || [];
+        
+        tableBody.innerHTML = '';
+        
+        if(bookings.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No bookings found.</td></tr>';
+            return;
+        }
+
+        bookings.reverse().forEach(book => {
+            const row = `<tr>
+                <td data-label="Name">${book.name}</td>
+                <td data-label="Phone">${book.phone}</td>
+                <td data-label="Date">${book.date}</td>
+                <td data-label="Time">${book.time}</td>
+                <td data-label="Service">${book.service}</td>
+                <td><button class="delete-btn" onclick="deleteBooking(${book.id})">Delete</button></td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+
+    // Delete Booking (OLD CODE - NO CHANGE)
+    function deleteBooking(id) {
+        if(confirm("Are you sure you want to delete this booking?")) {
+            let bookings = JSON.parse(localStorage.getItem('salonBookings')) || [];
+            bookings = bookings.filter(b => b.id !== id);
+            localStorage.setItem('salonBookings', JSON.stringify(bookings));
+            loadBookings();
+        }
+    }
+
+    // Set minimum date to today (OLD CODE - NO CHANGE)
+    document.getElementById('bookDate').min = new Date().toISOString().split("T")[0];
+</script>
+
+</body>
+</html>
